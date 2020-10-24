@@ -39,6 +39,8 @@ class UserController {
 
                 user.loadFromJSON(result);
 
+                user.save();
+
                 this.getTr(user, tr);
 
                 this.updateCount();
@@ -77,7 +79,7 @@ class UserController {
 
                 values.photo = content;
 
-                this.insert(values);
+                values.save();
 
                 this.addLine(values);
                 // clean form
@@ -168,18 +170,8 @@ class UserController {
 
     }
 
-    getUsersStorage() {
-        let users = [];
-
-        if (localStorage.getItem("users")) {
-            users = JSON.parse(localStorage.getItem("users"));
-        }
-
-        return users;
-    }
-
     selectAll() {
-        let users = this.getUsersStorage();
+        let users = User.getUsersStorage();
 
         users.forEach(dataUser => {
             let user = new User();
@@ -188,16 +180,6 @@ class UserController {
             this.addLine(user);
         });
 
-    }
-
-    insert(data) {
-        // COMANDO P VERIFICAR OS USERS CADASTRADOS : JSON.parse(localStorage.users)
-        let users = this.getUsersStorage();
-        users.push(data);
-        // primeiro parametro é o nome, o segundo valor (guarda apenas no navegador aberto)
-        // sessionStorage.setItem("users", JSON.stringify(users));
-        // fica com os dados até que apaguem em localStorage.
-        localStorage.setItem("users", JSON.stringify(users));
     }
 
     addLine(dataUser) {
@@ -238,6 +220,12 @@ class UserController {
         tr.querySelector(".btn-delete").addEventListener("click", e => {
 
             if (confirm("Deseja realmente excluir?")) {
+
+                let user = new User();
+                user.loadFromJSON(JSON.parse(tr.dataset.user));
+                // remover do local storage
+                user.remove();
+
                 tr.remove();
                 this.updateCount();
             }

@@ -1,6 +1,8 @@
 class User {
 
     constructor(name, gender, birth, country, email, password, photo, admin) {
+
+        this._id;
         this._name = name;
         this._gender = gender;
         this._birth = birth;
@@ -13,6 +15,9 @@ class User {
 
     }
 
+    get id() {
+        return this._id;
+    }
     get name() {
         return this._name;
     }
@@ -101,4 +106,61 @@ class User {
         }
     }
 
+    static getUsersStorage() {
+        let users = [];
+
+        if (localStorage.getItem("users")) {
+            users = JSON.parse(localStorage.getItem("users"));
+        }
+
+        return users;
+    }
+
+    getNewId() {
+
+        let usersID = parseInt(localStorage.getItem("usersID"));
+        if (!usersID > 0) usersID = 0;
+        usersID++;
+        localStorage.setItem("usersID",usersID);
+        return usersID;
+    }
+
+
+    save() {
+        // COMANDO P VERIFICAR OS USERS CADASTRADOS : JSON.parse(localStorage.users)
+        let users = User.getUsersStorage();
+        if (this.id > 0) {
+            users.map(u => {
+                if (u._id == this.id) {
+                    Object.assign(u, this);
+                }
+                return u;
+            });
+
+        } else {
+            this._id = this.getNewId();
+            users.push(this);
+
+        }
+        // primeiro parametro é o nome, o segundo valor (guarda apenas no navegador aberto)
+        // sessionStorage.setItem("users", JSON.stringify(users));
+        // fica com os dados até que apaguem em localStorage.
+        localStorage.setItem("users", JSON.stringify(users));
+
+    }
+
+    remove() {
+
+        let users = User.getUsersStorage();
+
+        users.forEach((userData, index) => {
+            if (this._id = userData._id) {
+                // index a partir daqui remove 1
+                users.splice(index, 1);
+            }
+        });
+        localStorage.setItem("users", JSON.stringify(users));
+
+
+    }
 }
