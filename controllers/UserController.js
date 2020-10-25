@@ -140,7 +140,7 @@ class UserController {
             // = atribuicao == comparaçao de valor === comparaçao de valor e tipo de dados (string,int).
             if (field.name == "gender") {
                 if (field.checked) {
-                    user.gender;
+                    user[field.name]=field.value;
                 }
             } else if (field.name == "admin") {
 
