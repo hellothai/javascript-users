@@ -12,6 +12,6 @@
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
-    "restify-clients": "^4.0.0"
+    "restify-clients": "^2.5.2"
   }
 }
