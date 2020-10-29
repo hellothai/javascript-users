@@ -1,3 +1,5 @@
+const { json } = require("express");
+
 class User {
 
     constructor(name, gender, birth, country, email, password, photo, admin) {
@@ -121,31 +123,41 @@ class User {
         let usersID = parseInt(localStorage.getItem("usersID"));
         if (!usersID > 0) usersID = 0;
         usersID++;
-        localStorage.setItem("usersID",usersID);
+        localStorage.setItem("usersID", usersID);
         return usersID;
     }
 
+    toJSON() {
+        let json = {};
+
+        // quais as chaves do objeto instanciado
+        Object.keys(this).forEach(key => {
+            if (this[key] !== undefined) json[key] = this[key];
+        });
+
+        return json;
+    }
 
     save() {
-        // COMANDO P VERIFICAR OS USERS CADASTRADOS : JSON.parse(localStorage.users)
-        let users = User.getUsersStorage();
-        if (this.id > 0) {
-            users.map(u => {
-                if (u._id == this.id) {
-                    Object.assign(u, this);
-                }
-                return u;
+
+        return new Promise((resolve, reject) => {
+            let promise;
+
+            if (this.id) {
+                //update
+                promise = HttpRequest.put(`/users/${this.id}`, this.toJSON());
+            } else {
+                promise = HttpRequest.post(`/users`, this.toJSON());
+            }
+
+            promise.then(data => {
+                this.loadFromJSON(data);
+                resolve(this);
+            }).catch(e => {
+                reject(e);
             });
 
-        } else {
-            this._id = this.getNewId();
-            users.push(this);
-
-        }
-        // primeiro parametro é o nome, o segundo valor (guarda apenas no navegador aberto)
-        // sessionStorage.setItem("users", JSON.stringify(users));
-        // fica com os dados até que apaguem em localStorage.
-        localStorage.setItem("users", JSON.stringify(users));
+        });
 
     }
 

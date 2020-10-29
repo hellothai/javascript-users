@@ -39,17 +39,18 @@ class UserController {
 
                 user.loadFromJSON(result);
 
-                user.save();
+                user.save().then(user => {
 
-                this.getTr(user, tr);
+                    this.getTr(user, tr);
 
-                this.updateCount();
+                    this.updateCount();
 
-                this.formUpdateEl.reset();
+                    this.formUpdateEl.reset();
 
-                btn.disabled = false;
+                    btn.disabled = false;
 
-                this.showPanelCreate();
+                    this.showPanelCreate();
+                });
             },
                 (e) => {
                     console.error(e);
@@ -79,13 +80,15 @@ class UserController {
 
                 values.photo = content;
 
-                values.save();
+                values.save().then(user => {
 
-                this.addLine(values);
-                // clean form
-                this.formEl.reset();
-                // habilitando o btn
-                btn.disabled = false;
+                    this.addLine(user);
+                    // clean form
+                    this.formEl.reset();
+                    // habilitando o btn
+                    btn.disabled = false;
+                });
+
             },
                 (e) => {
                     console.error(e);
@@ -140,7 +143,7 @@ class UserController {
             // = atribuicao == comparaçao de valor === comparaçao de valor e tipo de dados (string,int).
             if (field.name == "gender") {
                 if (field.checked) {
-                    user[field.name]=field.value;
+                    user[field.name] = field.value;
                 }
             } else if (field.name == "admin") {
 
@@ -170,14 +173,18 @@ class UserController {
 
     }
 
+    // responsável por pegar todos os users cadastrados
     selectAll() {
-        let users = User.getUsersStorage();
 
-        users.forEach(dataUser => {
-            let user = new User();
-            user.loadFromJSON(dataUser);
+        HttpRequest.get('/users').then(data => {
+            data.users.forEach(dataUser => {
+                let user = new User();
 
-            this.addLine(user);
+                user.loadFromJSON(dataUser);
+
+                this.addLine(user);
+            });
+
         });
 
     }
