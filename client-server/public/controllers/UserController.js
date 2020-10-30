@@ -176,7 +176,7 @@ class UserController {
     // responsável por pegar todos os users cadastrados
     selectAll() {
 
-        HttpRequest.get('/users').then(data => {
+        User.getUsersStorage().then(data => {
             data.users.forEach(dataUser => {
                 let user = new User();
 
@@ -230,11 +230,13 @@ class UserController {
 
                 let user = new User();
                 user.loadFromJSON(JSON.parse(tr.dataset.user));
-                // remover do local storage
-                user.remove();
 
-                tr.remove();
-                this.updateCount();
+                user.remove().then(data => {
+                    tr.remove();
+                    this.updateCount();
+                });
+
+
             }
         });
 

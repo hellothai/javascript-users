@@ -1,5 +1,3 @@
-const { json } = require("express");
-
 class User {
 
     constructor(name, gender, birth, country, email, password, photo, admin) {
@@ -103,28 +101,14 @@ class User {
                     this[name] = new Date(json[name]);
                     break;
                 default:
-                    this[name] = json[name];
+                    if (name.substring(0, 1) === '_') this[name] = json[name];
             }
         }
     }
 
     static getUsersStorage() {
-        let users = [];
 
-        if (localStorage.getItem("users")) {
-            users = JSON.parse(localStorage.getItem("users"));
-        }
-
-        return users;
-    }
-
-    getNewId() {
-
-        let usersID = parseInt(localStorage.getItem("usersID"));
-        if (!usersID > 0) usersID = 0;
-        usersID++;
-        localStorage.setItem("usersID", usersID);
-        return usersID;
+        return HttpRequest.get('/users');
     }
 
     toJSON() {
@@ -163,15 +147,7 @@ class User {
 
     remove() {
 
-        let users = User.getUsersStorage();
-
-        users.forEach((userData, index) => {
-            if (this._id = userData._id) {
-                // index a partir daqui remove 1
-                users.splice(index, 1);
-            }
-        });
-        localStorage.setItem("users", JSON.stringify(users));
+        return HttpRequest.delete(`users/${this.id}`);
 
 
     }

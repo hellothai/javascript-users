@@ -1,5 +1,3 @@
-const { application } = require("express");
-
 class HttpRequest {
 
     static get(url, params = {}){
